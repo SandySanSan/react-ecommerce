@@ -1,27 +1,41 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
+import { createStructuredSelector } from 'reselect';
+import { selectCartItems } from '../../../redux/cart/cart.selectors';
+import { toggleCartHidden } from '../../../redux/cart/cart.actions';
+
 import CustomButton from '../../custom-button/custom-button.component';
+import CartItem from '../../cart-item/cart-item.component';
 
 import './cart-dropdown.styles.scss';
-import CartItem from '../../cart-item/cart-item.component';
-import { selectCartItems } from '../../../redux/cart/cart.selectors';
 
-const CartDropdown = ({ cartItems }) => {
+const CartDropdown = ({ cartItems, history, dispatch }) => {
     return (
         <div className='cart-dropdown'>
             <div className='cart-items'>
-                {cartItems.map(item => (
-                    <CartItem key={item.id} item={item} />
-                ))}
+                {cartItems.length ? (
+                    cartItems.map((item) => (
+                        <CartItem key={item.id} item={item} />
+                    ))
+                ) : (
+                    <span className='empty-message'>Your cart is empty.</span>
+                )}
             </div>
-            <CustomButton>GO TO CHECKOUT</CustomButton>
+            <CustomButton
+                onClick={() => {
+                    history.push('/checkout');
+                    // avoid to write another unecessary disptach function
+                    dispatch(toggleCartHidden());
+                }}>
+                GO TO CHECKOUT
+            </CustomButton>
         </div>
     );
 };
 
-const mapStateToProps = state => ({
-    // prevent the re-render of the dropdown menu if signout for instance
-    cartItems: selectCartItems(state),
+const mapStateToProps = createStructuredSelector({
+    cartItems: selectCartItems,
 });
 
-export default connect(mapStateToProps)(CartDropdown);
+export default withRouter(connect(mapStateToProps)(CartDropdown));
