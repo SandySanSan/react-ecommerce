@@ -30,13 +30,20 @@ const CheckoutPage = ({ cartItems, total }) => {
             {cartItems.map((item) => (
                 <CheckoutItem cartItem={item} key={item.id} />
             ))}
-            <div className='total'>TOTAL: ${total}</div>
-            <div className='text-warning'>
-                * Please use the following test credit card for payments *{' '}
-                <br />
-                4242 4242 4242 4242 - Exp: 01/22 - CVV: 123
-            </div>
-            <StripeCheckoutButton price={total} />
+
+            {total === 0 ? (
+                <p className='text-warning'>Your cart is empty!</p>
+            ) : (
+                <>
+                    <div className='total'>TOTAL: ${total}</div>
+                    <div className='text-warning'>
+                        * Please use the following test credit card for payments
+                        * <br />
+                        4242 4242 4242 4242 - Exp: 01/22 - CVV: 123
+                    </div>
+                    <StripeCheckoutButton price={total} />
+                </>
+            )}
         </div>
     );
 };
