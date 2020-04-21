@@ -36,7 +36,7 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
     }
     return userRef;
 };
-
+// add items to Firestore
 export const addCollectionsAndDocuments = async (
     collectionKey,
     objectsToAdd
