@@ -15,12 +15,15 @@ const config = {
 
 export const createUserProfileDocument = async (userAuth, additionalData) => {
     if (!userAuth) return;
+    // query of the document reference object
     const userRef = firestore.doc(`users/${userAuth.uid}`);
+    // get the snapshot object
     const snapShot = await userRef.get();
     if (!snapShot.exists) {
         const { displayName, email } = userAuth;
         const createdAt = new Date();
         try {
+            // creates a new document
             await userRef.set({
                 displayName,
                 email,
@@ -32,6 +35,24 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
         }
     }
     return userRef;
+};
+
+export const addCollectionsAndDocuments = async (
+    collectionKey,
+    objectsToAdd
+) => {
+    const collectionRef = firestore.collection(collectionKey);
+    console.log(collectionRef);
+    // to prevent partial save to the db, create a batch object
+    const batch = firestore.batch();
+    objectsToAdd.forEach((obj) => {
+        // Firestore generates an unique id for each document
+        const newDocRef = collectionRef.doc();
+        // instead of call newDocRef.set
+        batch.set(newDocRef, obj);
+    });
+
+    return await batch.commit();
 };
 
 firebase.initializeApp(config);
